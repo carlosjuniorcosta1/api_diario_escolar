@@ -1,8 +1,15 @@
 from flask import Flask, jsonify, request
 import pyodbc
 import pandas as pd
+from flask_pydantic_spec import FlaskPydanticSpec
+
+
 
 app = Flask(__name__)
+spec = FlaskPydanticSpec('flask', title = "Endpoints para inserir alunos")
+spec.register(app)
+
+
 
 data_for_connection = (
     "Driver={SQL Server Native Client RDA 11.0};"
@@ -151,30 +158,30 @@ def list_year_level():
     "cpf": x[6], 
     "id" : x[7],
 
-})           
+})          
         
     return jsonify(message = "Alunos por ano cursado", data = list_y)                   
-            
+           
 @app.route('/diario', methods = ['POST'])
 def insert_student():
     new_std = request.get_json(force=True)
-    #new_id = new_std['id']
     new_na = new_std['nome']
     new_su = new_std['sobrenome']
     new_fn = new_std['nome'] + ' ' + new_std['sobrenome']
     new_gr = new_std['ano']
     new_l = new_std['nivel_ensino']
     new_ag = new_std['idade']
-    new_c = new_std['cpf']
+    new_c = new_std['cpf']   
       
-    cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo, ano, nivel_ensino, idade, cpf)
+    cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo,
+                   ano, nivel_ensino, idade, cpf)
                    VALUES ('{new_na}', '{new_su}', '{new_fn}', 
                    '{new_gr}', '{new_l}', '{new_ag}', '{new_c}')
                    """)
     cursor.commit()
     return jsonify(message = "Aluno cadastrado com sucesso")
     
-    
+
     
     
             
