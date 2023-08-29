@@ -17,24 +17,31 @@ cursor = connection.cursor()
 show_table_names = cursor.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES \
                                   WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='bd_alunos'")
 
+show_table_names = show_table_names.fetchall()
+
+
+
+print(show_table_names)
+
+
 
 
 @app.route('/diario', methods = ['GET'])
 def list_all_students():
-    cursor = connection.cursor()
-    db = cursor.execute(f"SELECT * FROM dados_alunos")
+    db = cursor.execute(f"SELECT * FROM dados_alunos ORDER BY id DESC")
     query_st = db.fetchall()
     all_st = []
     for x in query_st:
         all_st.append({
-            "column1" : x[0],
-            "nome": x[1],
-            "sobrenome": x[2],
-            "nome_completo": x[3],
-            "ano": x[4],
-            "nivel_ensino": x[5],
-            "idade": x[6], 
-            "cpf": x[7]
+            "nome": x[0],
+            "sobrenome": x[1],
+            "nome_completo": x[2],
+            "ano": x[3],
+            "nivel_ensino": x[4],
+            "idade": x[5], 
+            "cpf": x[6],
+            "id" : x[7],
+
         })
         print(all_st)
     return jsonify(message = "Lista de todos os alunos", lista_total = all_st)
@@ -135,20 +142,39 @@ def list_year_level():
     for x in query_l:
         list_y.append({
             
-    "column1" : x[0],
-    "nome": x[1],
-    "sobrenome": x[2],
-    "nome_completo": x[3],
-    "ano": x[4],
-    "nivel_ensino": x[5],
-    "idade": x[6], 
-    "cpf": x[7]
+    "nome": x[0],
+    "sobrenome": x[1],
+    "nome_completo": x[2],
+    "ano": x[3],
+    "nivel_ensino": x[4],
+    "idade": x[5], 
+    "cpf": x[6], 
+    "id" : x[7],
+
 })           
         
     return jsonify(message = "Alunos por ano cursado", data = list_y)                   
             
-@app.route('/diario/inserir', methods = ['POST'])
+@app.route('/diario', methods = ['POST'])
 def insert_student():
+    new_std = request.get_json(force=True)
+    #new_id = new_std['id']
+    new_na = new_std['nome']
+    new_su = new_std['sobrenome']
+    new_fn = new_std['nome'] + ' ' + new_std['sobrenome']
+    new_gr = new_std['ano']
+    new_l = new_std['nivel_ensino']
+    new_ag = new_std['idade']
+    new_c = new_std['cpf']
+      
+    cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo, ano, nivel_ensino, idade, cpf)
+                   VALUES ('{new_na}', '{new_su}', '{new_fn}', 
+                   '{new_gr}', '{new_l}', '{new_ag}', '{new_c}')
+                   """)
+    cursor.commit()
+    return jsonify(message = "Aluno cadastrado com sucesso")
+    
+    
     
     
             

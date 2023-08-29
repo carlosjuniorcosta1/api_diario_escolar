@@ -11,6 +11,8 @@ import numpy as np
 
 df = pd.read_csv('dados_alunos.csv')
 
+df.drop('Unnamed: 0', axis = 1, inplace=True)
+
 df.drop("Unnamed: 0", axis = 1, inplace=True)
 
 df_dados_alunos = df.loc[:, "nome" : "idade"]
@@ -64,4 +66,4 @@ df.to_csv('dados_alunos.csv')
 df_dados_alunos.to_csv('dados_alunos.csv')
 
 
-
+df = 
