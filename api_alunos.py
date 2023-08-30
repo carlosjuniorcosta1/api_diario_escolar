@@ -1,14 +1,26 @@
 from flask import Flask, jsonify, request
 import pyodbc
 import pandas as pd
-from flask_pydantic_spec import FlaskPydanticSpec
+from flask_pydantic_spec import FlaskPydanticSpec, Response, Request 
+from pydantic import BaseModel
+
 
 
 
 app = Flask(__name__)
-spec = FlaskPydanticSpec('flask', title = "Endpoints para inserir alunos")
+spec = FlaskPydanticSpec('flask', title = "Endpoints do banco de dados de alunos")
 spec.register(app)
 
+class Student(BaseModel):
+    name: str
+    surname: str
+    full_name: str 
+    grade: str
+    level: str 
+    age: int
+    cpf: str
+    id: int 
+    
 
 
 data_for_connection = (
@@ -32,9 +44,10 @@ print(show_table_names)
 
 
 
-
 @app.route('/diario', methods = ['GET'])
+#@spec.validate(resp=Response(HTTP_200=Student))
 def list_all_students():
+    """Lista todos os estudantes da escola """
     db = cursor.execute(f"SELECT * FROM dados_alunos ORDER BY id DESC")
     query_st = db.fetchall()
     all_st = []
@@ -55,6 +68,7 @@ def list_all_students():
         
 @app.route('/diario/', methods = ['GET'])
 def list_year_level():
+    """Lista por filtros """
     filter_y = request.values.get('ano')
     filter_y2 = request.values.getlist('ano')
     filter_level = request.values.getlist('nivel')    
@@ -163,7 +177,9 @@ def list_year_level():
     return jsonify(message = "Alunos por ano cursado", data = list_y)                   
            
 @app.route('/diario', methods = ['POST'])
+
 def insert_student():
+    """Insere um novo estudante"""
     new_std = request.get_json(force=True)
     new_na = new_std['nome']
     new_su = new_std['sobrenome']
@@ -172,7 +188,6 @@ def insert_student():
     new_l = new_std['nivel_ensino']
     new_ag = new_std['idade']
     new_c = new_std['cpf']   
-      
     cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo,
                    ano, nivel_ensino, idade, cpf)
                    VALUES ('{new_na}', '{new_su}', '{new_fn}', 
@@ -181,7 +196,14 @@ def insert_student():
     cursor.commit()
     return jsonify(message = "Aluno cadastrado com sucesso")
     
+@app.route('/diario/deletar/<id_student>', methods = ['DELETE'])
+def delete_student(id_student):
 
+    """Deleta um estudante da lista"""
+    cursor.execute(f"""
+                   DELETE FROM dados_alunos WHERE id=?""", (id_student))
+    cursor.commit()
+    return jsonify(message = "Aluno deletado da lista. ")    
     
     
             
