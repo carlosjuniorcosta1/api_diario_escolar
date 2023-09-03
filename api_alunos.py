@@ -19,8 +19,7 @@ class Student(BaseModel):
     level: str 
     age: int
     cpf: str
-    id: int 
-    
+    id: int     
 
 
 data_for_connection = (
@@ -65,10 +64,11 @@ def list_all_students():
         })
         print(all_st)
     return jsonify(message = "Lista de todos os alunos", lista_total = all_st)
-        
+
+ 
 @app.route('/diario/', methods = ['GET'])
-def list_year_level():
-    """Lista por filtros """
+def list_filters():
+    """Lista por filtros - id, ano, nivel, nome, sobrenome, nome_c, cpf, idade """
     filter_y = request.values.get('ano')
     filter_y2 = request.values.getlist('ano')
     filter_level = request.values.getlist('nivel')    
@@ -77,6 +77,7 @@ def list_year_level():
     filter_name = request.values.get('nome')
     filter_cpf = request.values.get('cpf')
     filter_age = request.values.get('idade')
+    filter_id = request.values.get('id')
     
    
     if filter_y2 is not None:
@@ -156,6 +157,10 @@ def list_year_level():
             query_l = cursor.execute(f"""
                                      SELECT * FROM dados_alunos WHERE idade
                                      = {filter_age}""")
+    if filter_id is not None:
+        query_l = cursor.execute(f"""
+                                 SELECT * FROM dados_alunos WHERE id= {filter_id}""")
+    
 
     query_l = query_l.fetchall()
     list_y = []
@@ -206,5 +211,27 @@ def delete_student(id_student):
     return jsonify(message = "Aluno deletado da lista. ")    
     
     
-            
+@app.route('/diario/atualizar/<id_student>', methods = ['PUT'])
+def update_std(id_student):
+    """Atualiza um estudante da lista"""
+  
+    updated_data = request.get_json(force=True)
+    up_na = updated_data['nome']
+    up_su = updated_data['sobrenome']
+    up_fn =updated_data['nome'] + updated_data['sobrenome']
+    up_gr = updated_data['ano']
+    up_le = updated_data['nivel_ensino']
+    up_ag = updated_data['idade']
+    up_cpf = updated_data['cpf']
+    
+    cursor.execute(f"""UPDATE dados_alunos SET nome = '{up_na}', 
+                   sobrenome = '{up_su}', nome_completo = '{up_fn}',
+                   ano = '{up_gr}', nivel_ensino = '{up_le}', 
+                   idade = {up_ag}, cpf = '{up_cpf}' WHERE id ={id_student}
+                   """)
+    
+    cursor.commit()
+    return(jsonify(message = "Estudante com get"))
+    
+    
 app.run(debug=True)

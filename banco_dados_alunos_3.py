@@ -66,4 +66,10 @@ df.to_csv('dados_alunos.csv')
 df_dados_alunos.to_csv('dados_alunos.csv')
 
 
-df = 
+for y in range(206):
+    print(f"UPDATE dados_alunos SET turma {random.randint(1,4)}  WHERE id = {y},")
+    
+    
+import random
+random.randint(1,4)
+    
