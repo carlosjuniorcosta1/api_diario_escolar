@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import pyodbc
 import pandas as pd
-from flask_pydantic_spec import FlaskPydanticSpec, Response, Request 
+from flask_pydantic_spec import FlaskPydanticSpec
 from pydantic import BaseModel
 
 
@@ -38,12 +38,12 @@ show_table_names = cursor.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TA
 show_table_names = show_table_names.fetchall()
 
 
-
 print(show_table_names)
 
 
 
 @app.route('/diario', methods = ['GET'])
+
 #@spec.validate(resp=Response(HTTP_200=Student))
 def list_all_students():
     """Lista todos os estudantes da escola """
@@ -60,6 +60,7 @@ def list_all_students():
             "idade": x[5], 
             "cpf": x[6],
             "id" : x[7],
+            "turma": x[8]
 
         })
         print(all_st)
@@ -176,6 +177,7 @@ def list_filters():
     "idade": x[5], 
     "cpf": x[6], 
     "id" : x[7],
+    "turma": x[8]
 
 })          
         
@@ -192,11 +194,12 @@ def insert_student():
     new_gr = new_std['ano']
     new_l = new_std['nivel_ensino']
     new_ag = new_std['idade']
-    new_c = new_std['cpf']   
+    new_c = new_std['cpf']
+    new_cl = new_std['turma']
     cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo,
-                   ano, nivel_ensino, idade, cpf)
+                   ano, nivel_ensino, idade, cpf, turma)
                    VALUES ('{new_na}', '{new_su}', '{new_fn}', 
-                   '{new_gr}', '{new_l}', '{new_ag}', '{new_c}')
+                   '{new_gr}', '{new_l}', '{new_ag}', '{new_c}', {new_cl})
                    """)
     cursor.commit()
     return jsonify(message = "Aluno cadastrado com sucesso")
@@ -223,11 +226,12 @@ def update_std(id_student):
     up_le = updated_data['nivel_ensino']
     up_ag = updated_data['idade']
     up_cpf = updated_data['cpf']
+    up_cl = updated_data['turma']
     
     cursor.execute(f"""UPDATE dados_alunos SET nome = '{up_na}', 
                    sobrenome = '{up_su}', nome_completo = '{up_fn}',
                    ano = '{up_gr}', nivel_ensino = '{up_le}', 
-                   idade = {up_ag}, cpf = '{up_cpf}' WHERE id ={id_student}
+                   idade = {up_ag}, cpf = '{up_cpf}', turma = {up_cl} WHERE id ={id_student}
                    """)
     
     cursor.commit()
