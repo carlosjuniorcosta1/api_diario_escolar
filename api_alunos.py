@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 
 
-
 app = Flask(__name__)
 spec = FlaskPydanticSpec('flask', title = "Endpoints do banco de dados de alunos")
 spec.register(app)
@@ -38,7 +37,9 @@ show_table_names = cursor.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TA
 show_table_names = show_table_names.fetchall()
 
 
+
 print(show_table_names)
+
 
 
 
