@@ -13,19 +13,16 @@ spec.register(app)
 data_for_connection = (
     "Driver={SQL Server Native Client RDA 11.0};"
     "Server=DESKTOP-1698A6Q\SQLEXPRESS;"
-    "Database=bd_alunos;"  
+    "Database=bncc;"  
     "Trusted_connection=YES;"
 )
 connection = pyodbc.connect(data_for_connection)
 cursor = connection.cursor()
 show_table_names = cursor.execute(f"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES \
-                                  WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='bd_alunos'")
+                                  WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_CATALOG='bncc'")
 show_table_names = show_table_names.fetchall()
 
+print(show_table_names)
 
-df = pd.read_sql(f"select * from dados_alunos", con= connection)
-
-df_pd = pd.DataFrame(df)
-print(df_pd)
-
-df_pd.to_csv('bd_inserir_alunos.csv')
+#cursor.execute(f"drop table tabela_avaliacao")
+#cursor.commit()
