@@ -5,9 +5,8 @@ from flask_pydantic_spec import FlaskPydanticSpec
 from pydantic import BaseModel
 
 
-
 app = Flask(__name__)
-spec = FlaskPydanticSpec('flask', title = "Endpoints do banco de dados de alunos")
+spec = FlaskPydanticSpec('flask', title = "Endpoints da api para inserir alunos")
 spec.register(app)
 
 class Student(BaseModel):
@@ -24,7 +23,7 @@ class Student(BaseModel):
 data_for_connection = (
     "Driver={SQL Server Native Client RDA 11.0};"
     "Server=DESKTOP-1698A6Q\SQLEXPRESS;"
-    "Database=bd_alunos;"  
+    "Database=bncc;"  
     "Trusted_connection=YES;"
 )
 

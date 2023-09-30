@@ -1,7 +1,11 @@
 from flask import Flask, jsonify, request 
 import pyodbc
+from flask_pydantic_spec import FlaskPydanticSpec
 
 app = Flask(__name__)
+spec = FlaskPydanticSpec('flask', title = "Endpoints da api de consulta \
+                         da Base Nacional Curricular Comum - BNCC")
+spec.register(app)
 
 data_for_connection = (
     "Driver={SQL Server Native Client RDA 11.0};"
@@ -27,6 +31,31 @@ for x in table_names:
 @app.route('/apibncc/<subject>', methods=["GET"])
 @app.route('/apibncc/<subject>/<grade>', methods = ["GET"])
 def list_all(subject, grade = None):
+    """Lista todo o currículo por matéria e por ano via path, por matéria e/ou matéria e ano.
+Escolha o currículo a ser consultado: \n
+bncc_artes_ef \n
+bncc_ciencias_ef \n
+bncc_educacao_fisica_ef \n
+bncc_ensino_religioso_ef \n 
+bncc_geografia_ef \n
+bncc_historia_ef \n
+bncc_lingua_inglesa_ef \n
+bncc_matematica_ef \n
+bncc_lingua_portuguesa_ef \n
+
+Escolha o ano a ser consultado: \n
+Ensino fundamental: \n
+sexto_ef \n 
+setimo_ef \n 
+oitavo_ef \n 
+nono_ef \n
+
+Ensino Médio:
+primeiro_em \n
+segundo_em \n
+terceiro_em 
+   
+    """
     try:
         if len(grade) > 0:        
             db = cursor.execute(f"SELECT * FROM {subject} where {grade} = 'true'")
@@ -297,6 +326,7 @@ def list_all(subject, grade = None):
 
 @app.route('/apibncc/', methods = ["GET"])
 def list_all_two():
+    """Lista todo o currículo por matéria e ano via query string"""
     subject = request.args.get('materia', None, type= str)
     grade = request.args.get('ano', None, type = str)
                           
