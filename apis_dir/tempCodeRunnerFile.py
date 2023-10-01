@@ -1,0 +1,8 @@
+    up_na = updated_data['nome']
+    up_su = updated_data['sobrenome']
+    up_fn =updated_data['nome'] + updated_data['sobrenome']
+    up_gr = updated_data['ano']
+    up_le = updated_data['nivel_ensino']
+    up_ag = updated_data['idade']
+    up_cpf = updated_data['cpf']
+    up_cl = updated_data['turma']

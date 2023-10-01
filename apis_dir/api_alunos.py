@@ -37,17 +37,11 @@ show_table_names = show_table_names.fetchall()
 
 
 
-print(show_table_names)
-
-
-
-
 @app.route('/diario', methods = ['GET'])
-
 #@spec.validate(resp=Response(HTTP_200=Student))
 def list_all_students():
     """Lista todos os estudantes da escola """
-    db = cursor.execute(f"SELECT * FROM dados_alunos ORDER BY id DESC")
+    db = cursor.execute(f"SELECT * FROM tabela_alunos ORDER BY id_aluno DESC")
     query_st = db.fetchall()
     all_st = []
     for x in query_st:
@@ -63,9 +57,27 @@ def list_all_students():
             "turma": x[8]
 
         })
-        print(all_st)
     return jsonify(message = "Lista de todos os alunos", lista_total = all_st)
 
+@app.route('/diario/aluno/<id_student>', methods = ['GET'])
+def list_student_by_id(id_student):
+    "Lista os dados de um estudante pelo id"
+    db = cursor.execute(f"SELECT * FROM tabela_alunos where id_aluno = ?", (id_student) )
+    query_data = db.fetchall()
+    query_l = []
+    for x in query_data:
+        query_l.append({
+            "nome": x[0],
+            "sobrenome": x[1],
+            "nome_completo": x[2],
+            "ano": x[3],
+            "nivel_ensino": x[4],
+            "idade": x[5], 
+            "cpf": x[6],
+            "turma": x[8]
+            
+        })
+        return jsonify(data = query_l, message = "Aluno solicitado")
  
 @app.route('/diario/', methods = ['GET'])
 def list_filters():
@@ -83,84 +95,84 @@ def list_filters():
    
     if filter_y2 is not None:
         if len(filter_y2) == 1:        
-            query_l = cursor.execute(f"SELECT * FROM dados_alunos WHERE ano = '{filter_y}'")
+            query_l = cursor.execute(f"SELECT * FROM tabela_alunos WHERE ano = '{filter_y}'")
         
     if filter_y2 is not None:
         if len(filter_y2) >= 2:     
             
             if 'sexto' and 'setimo' in filter_y2:
                 #ok
-                query_l = cursor.execute(f"SELECT * FROM dados_alunos WHERE ano = 'sexto' or ano = 'setimo'")
+                query_l = cursor.execute(f"SELECT * FROM tabela_alunos WHERE ano = 'sexto' or ano = 'setimo'")
             if 'sexto' and 'oitavo' in filter_y2:
-                query_l = cursor.execute(f"SELECT * FROM dados_alunos WHERE ano = 'sexto' or ano = 'oitavo'")
+                query_l = cursor.execute(f"SELECT * FROM tabela_alunos WHERE ano = 'sexto' or ano = 'oitavo'")
             if 'sexto' and 'nono' in filter_y2:
-                query_l = cursor.execute(f"""SELECT * FROM dados_alunos WHERE 
+                query_l = cursor.execute(f"""SELECT * FROM tabela_alunos WHERE 
                                         ano = 'sexto' or ano = 'nono'""")           
             if 'sexto' and 'setimo' and 'oitavo' in filter_y2:
-                query_l = cursor.execute(f"""SELECT * FROM dados_alunos WHERE ano = 
+                query_l = cursor.execute(f"""SELECT * FROM tabela_alunos WHERE ano = 
                                         'sexto' or ano = 'setimo' OR ano = 'oitavo'""")
             if 'sexto' and 'setimo' and 'nono' in filter_y2:
-                query_l = cursor.execute(f"""SELECT * FROM dados_alunos WHERE ano = 
+                query_l = cursor.execute(f"""SELECT * FROM tabela_alunos WHERE ano = 
                                         'sexto' or ano = 'setimo' OR ano = 'nono'""")
         
     
             if 'setimo' and 'oitavo' in filter_y2:
-                query_l = cursor.execute(f"""SELECT * FROM dados_alunos WHERE ano = 
+                query_l = cursor.execute(f"""SELECT * FROM tabela_alunos WHERE ano = 
                                         'setimo' OR ano = 'oitavo'""")
                 
             if 'setimo' and 'oitavo' and 'nono' in filter_y2:
                 query_l = cursor.execute(f"""
-                                        SELECT * FROM dados_alunos WHERE ano =
+                                        SELECT * FROM tabela_alunos WHERE ano =
                                         'setimo' OR ano = 'oitavo' OR ano = 'nono'                                     
                                         """)
             if 'oitavo' and 'nono' in filter_y2:
                 query_l = cursor.execute(f"""
-                                        SELECT * FROM dados_alunos WHERE ano = 
+                                        SELECT * FROM tabela_alunos WHERE ano = 
                                         'oitavo' OR ano = 'nono'                                     
                                         """)
     if filter_level is not None:
         if len(filter_level) > 0:
         
             if 'em' and 'ef' in filter_level:
-                query_l= cursor.execute(f""" SELECT * FROM dados_alunos WHERE nivel_ensino = 'ef' OR 
+                query_l= cursor.execute(f""" SELECT * FROM tabela_alunos WHERE nivel_ensino = 'ef' OR 
                                         nivel_ensino = 'em'
                                         """)
             if 'ef' not in filter_level:
                 query_l =  cursor.execute(f"""
-                                        SELECT * FROM dados_alunos WHERE nivel_ensino = 'em'                                  
+                                        SELECT * FROM tabela_alunos WHERE nivel_ensino = 'em'                                  
                                         """)
             if 'em' not in filter_level:
-                query_l= cursor.execute(f""" SELECT * FROM dados_alunos WHERE nivel_ensino = 'ef'
+                query_l= cursor.execute(f""" SELECT * FROM tabela_alunos WHERE nivel_ensino = 'ef'
                                         """)
     if filter_full_name is not None:
         if len(filter_full_name) > 0:
             query_l = cursor.execute(f"""
-                                SELECT * FROM dados_alunos WHERE nome_completo
+                                SELECT * FROM tabela_alunos WHERE nome_completo
                                 LIKE ?""", filter_full_name + '%')
     if filter_surname is not None:
         if len(filter_surname) > 0:
             query_l = cursor.execute(f"""
-                                SELECT * FROM dados_alunos WHERE sobrenome
+                                SELECT * FROM tabela_alunos WHERE sobrenome
                                 LIKE ?""", filter_surname + '%')
             
     if filter_name is not None:
         if len(filter_name) > 0:
             query_l = cursor.execute(f"""
-                            SELECT * FROM dados_alunos WHERE nome
+                            SELECT * FROM tabela_alunos WHERE nome
                             LIKE ?""", filter_name + '%')
     if filter_cpf is not None:
         if len(filter_cpf) > 0:
             query_l = cursor.execute(f"""
-                        SELECT * FROM dados_alunos WHERE cpf
+                        SELECT * FROM tabela_alunos WHERE cpf
                         LIKE ?""", filter_cpf + '%')
     if filter_age is not None:
         if len(filter_age) > 0:
             query_l = cursor.execute(f"""
-                                     SELECT * FROM dados_alunos WHERE idade
+                                     SELECT * FROM tabela_alunos WHERE idade
                                      = {filter_age}""")
     if filter_id is not None:
         query_l = cursor.execute(f"""
-                                 SELECT * FROM dados_alunos WHERE id= {filter_id}""")
+                                 SELECT * FROM tabela_alunos WHERE id_aluno= {filter_id}""")
     
 
     query_l = query_l.fetchall()
@@ -183,7 +195,7 @@ def list_filters():
         
     return jsonify(message = "Alunos por ano cursado", data = list_y)                   
            
-@app.route('/diario', methods = ['POST'])
+@app.route('/diario/inserir', methods = ['POST'])
 
 def insert_student():
     """Insere um novo estudante"""
@@ -196,7 +208,7 @@ def insert_student():
     new_ag = new_std['idade']
     new_c = new_std['cpf']
     new_cl = new_std['turma']
-    cursor.execute(f""" INSERT INTO dados_alunos (nome, sobrenome, nome_completo,
+    cursor.execute(f""" INSERT INTO tabela_alunos (nome, sobrenome, nome_completo,
                    ano, nivel_ensino, idade, cpf, turma)
                    VALUES ('{new_na}', '{new_su}', '{new_fn}', 
                    '{new_gr}', '{new_l}', '{new_ag}', '{new_c}', {new_cl})
@@ -209,7 +221,7 @@ def delete_student(id_student):
 
     """Deleta um estudante da lista"""
     cursor.execute(f"""
-                   DELETE FROM dados_alunos WHERE id=?""", (id_student))
+                   DELETE FROM tabela_alunos WHERE id_aluno=?""", (id_student))
     cursor.commit()
     return jsonify(message = "Aluno deletado da lista. ")    
     
@@ -228,10 +240,10 @@ def update_std(id_student):
     up_cpf = updated_data['cpf']
     up_cl = updated_data['turma']
     
-    cursor.execute(f"""UPDATE dados_alunos SET nome = '{up_na}', 
+    cursor.execute(f"""UPDATE tabela_alunos SET nome = '{up_na}', 
                    sobrenome = '{up_su}', nome_completo = '{up_fn}',
                    ano = '{up_gr}', nivel_ensino = '{up_le}', 
-                   idade = {up_ag}, cpf = '{up_cpf}', turma = {up_cl} WHERE id ={id_student}
+                   idade = {up_ag}, cpf = '{up_cpf}', turma = {up_cl} WHERE id_aluno ={id_student}
                    """)
     
     cursor.commit()
